@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asisten Riset Paralel</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Use Inter font as default */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for a cleaner look */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background-color: #475569;
+            border-radius: 20px;
+            border: 3px solid #1e293b;
+        }
+        /* Style for the temporary feedback message */
+        .copy-feedback {
+            animation: fadeInOut 2s ease-in-out;
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translateY(10px); }
+            10%, 90% { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 antialiased">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-white">Asisten Riset Paralel</h1>
+            <p class="text-slate-400 mt-2">Siapkan prompt Anda, lalu buka semua tab riset dengan sekali klik.</p>
+        </header>
+
+        <!-- Main Content: Prompt Inputs -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Column 1: Configuration Prompt -->
+            <div>
+                <label for="config-prompt" class="block mb-2 text-sm font-medium text-slate-300">1. Konfigurasi / Gaya Awal</label>
+                <textarea id="config-prompt" rows="20" class="w-full p-4 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-200 text-slate-300 resize-y" placeholder="Masukkan gaya, tone, atau konteks umum di sini... (cth: singkat, padat, mudah dipahami)">Oke, saya paham. Anda ingin sebuah prompt yang bisa Anda gunakan di model AI lain (mungkin versi "pro" atau akun berbeda) agar model tersebut langsung mengerti konteks percakapan kita dari awal hingga akhir, khususnya tentang niat Anda membangun channel YouTube "Ekonomi Singkat" dan hal-hal teknis terkait. 
+ Ini adalah ide yang bagus untuk memastikan kesinambungan percakapan dan hemat waktu. 
+ Prompt untuk Model AI Lain 
+ Anda bisa menyalin dan menempelkan prompt di bawah ini ke model AI lain. Ini akan memberikan mereka gambaran menyeluruh tentang percakapan kita sebelumnya: 
+ Saya sedang mengembangkan channel YouTube baru bernama "Ekonomi Singkat". Tujuannya adalah edukasi ilmu ekonomi dasar dan hal-hal terkait secara singkat, padat, dan jelas, menggunakan analogi sederhana agar mudah dipahami, dengan gaya bahasa informal dan santai untuk menciptakan suasana nyaman bagi penonton. 
+
+ Saya telah melalui beberapa tahap perencanaan dan teknis, di antaranya: 
+
+ 1.  **Niat Monetisasi:** Memahami syarat monetisasi YouTube (500 subscriber, 3 video, 3000 jam tayang publik/3 juta Shorts views dalam 12/90 hari). Saya menghitung bahwa 3000 jam penayangan itu relatif bisa dicapai dengan video 10 menit dan 24.000 penonton penuh. 
+ 2.  **Niche & Konsep Konten:** Memilih niche ekonomi karena saya merasa memiliki pengetahuan dasar investasi (sejak SMP 2020) dan ekonomi makro, serta merasa ini adalah market yang besar dan menguntungkan. Saya berencana membuat konten seperti presentasi singkat (mirip PPT) ekonomi makro berdurasi sekitar 17 menit, kemungkinan menggunakan voice AI. 
+ 3.  **Alat Produksi:** Mempertimbangkan CapCut atau Canva untuk editing (cenderung ke Canva), dan mencari rekomendasi voice AI gratis, natural, serta bisa mendukung bahasa Sunda/Jawa (seperti TTSFree.com, iMyFone VoxBox, Speakatoo, Maestra) yang aman untuk monetisasi YouTube. 
+ 4.  **Desain Banner YouTube:** Memiliki gambar 600x600px dengan background putih polos dan mencari AI image editor untuk memperluas ukurannya agar sesuai standar banner YouTube (direkomendasikan Pixelcut, Fotor, Picsart, Phot.AI). 
+ 5.  **Sistem Donasi (Saweria):** Berniat menggunakan Saweria untuk donasi. Saya memiliki kekhawatiran tentang keamanan rekening BCA jika langsung dihubungkan, serta tentang fee dan kemudahan proses donasi bagi penonton. Saya telah memutuskan untuk menghubungkan GoPay ke Saweria untuk pencairan dana karena merasa lebih aman dan GoPay memiliki fitur refund jika ada masalah (sudah paham langkah menghubungkan GoPy ke Saweria dan bagaimana cara menyalin serta menempelkan link Saweria di deskripsi YouTube). 
+ 6.  **Gaya Bahasa Deskripsi & Konten:** Saya sengaja menggunakan bahasa informal ("gw," "lo") di deskripsi dan konten video karena percaya ini akan menciptakan suasana "safety room" yang menyenangkan, mempermudah pemahaman topik ekonomi yang kompleks, meningkatkan engagement, dan menjadi branding channel. Saya sudah membuat draft deskripsi dan menyadari pentingnya SEO serta ajakan bertindak yang lebih lengkap tanpa kehilangan gaya informal.
+stylenya singkat, padat,mudah di pahami, dan juga analogi yang sempurna berdasarkan data</textarea>
+            </div>
+            <!-- Column 2: Specific Prompt -->
+            <div>
+                <label for="specific-prompt" class="block mb-2 text-sm font-medium text-slate-300">2. Prompt Spesifik / Pertanyaan</label>
+                <textarea id="specific-prompt" rows="20" class="w-full p-4 bg-slate-800 border border-slate-700 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition duration-200 text-slate-300 resize-y" placeholder="Masukkan pertanyaan atau topik spesifik Anda di sini...">apa itu gdp (dan tanggal terbentuk) , mengapa ada gdp dan tujuan, lalu fungsi dan analogi, lalu sedikti konsep yang membuat pemahaman lebih mengerti, lalu pancingan untuk mengenal lebih dalam tentangnya beruta info atau pernyataan (tidak ada pertanyaan disini).</textarea>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <button id="generate-btn" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 shadow-lg">
+                Gabungkan & Siapkan untuk Disalin
+            </button>
+            <button id="open-tabs-btn" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 shadow-lg">
+                Buka Semua Tab (5 Gemini + 1 Canva)
+            </button>
+        </div>
+
+        <!-- Output Section (Initially Hidden) -->
+        <div id="output-area" class="hidden">
+            <label for="combined-prompt" class="block mb-2 text-sm font-medium text-slate-300">Hasil Gabungan (Siap Disalin)</label>
+            <div class="relative">
+                <textarea id="combined-prompt" rows="12" class="w-full p-4 bg-slate-950 border border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition duration-200 text-slate-300 resize-y" readonly></textarea>
+                <button id="copy-btn" class="absolute top-3 right-3 bg-slate-700 hover:bg-slate-600 text-slate-300 font-semibold py-2 px-4 rounded-lg transition duration-200 text-sm">
+                    Salin
+                </button>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // --- DOM Element Selection ---
+        const configPrompt = document.getElementById('config-prompt');
+        const specificPrompt = document.getElementById('specific-prompt');
+        const generateBtn = document.getElementById('generate-btn');
+        const openTabsBtn = document.getElementById('open-tabs-btn');
+        const outputArea = document.getElementById('output-area');
+        const combinedPrompt = document.getElementById('combined-prompt');
+        const copyBtn = document.getElementById('copy-btn');
+
+        // --- Event Listener for Generate Button ---
+        generateBtn.addEventListener('click', () => {
+            // Get values from both textareas
+            const configValue = configPrompt.value.trim();
+            const specificValue = specificPrompt.value.trim();
+
+            // Combine them with a line break in between (like shift+enter)
+            const result = `${configValue}\n\n${specificValue}`;
+
+            // Set the combined value to the output textarea
+            combinedPrompt.value = result;
+
+            // Show the output area
+            outputArea.classList.remove('hidden');
+
+            // Scroll to the output area so the user can see it
+            outputArea.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // --- Event Listener for Copy Button ---
+        copyBtn.addEventListener('click', () => {
+            // Select the text in the output textarea
+            combinedPrompt.select();
+            combinedPrompt.setSelectionRange(0, 99999); // For mobile devices
+
+            // Use the recommended method for copying in this environment
+            try {
+                document.execCommand('copy');
+                
+                // Provide visual feedback to the user
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Tersalin!';
+                copyBtn.classList.add('bg-green-600');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('bg-green-600');
+                }, 2000);
+
+            } catch (err) {
+                console.error('Gagal menyalin teks: ', err);
+                alert('Oops, gagal menyalin teks. Silakan salin secara manual.');
+            }
+
+            // Deselect the text
+            window.getSelection().removeAllRanges();
+        });
+        
+        // --- Event Listener for Open All Tabs Button ---
+        openTabsBtn.addEventListener('click', () => {
+            // Define the URLs to open
+            const urlsToOpen = [
+                'https://gemini.google.com/app', // Tab 1
+                'https://gemini.google.com/app', // Tab 2
+                'https://gemini.google.com/app', // Tab 3
+                'https://gemini.google.com/app', // Tab 4
+                'https://gemini.google.com/app', // Tab 5
+                'https://www.canva.com/'          // Tab 6
+            ];
+
+            // Loop through the array and open each URL in a new tab
+            // Note: Your browser might block pop-ups. You may need to allow them for this site.
+            urlsToOpen.forEach(url => {
+                window.open(url, '_blank');
+            });
+        });
+    </script>
+</body>
+</html>

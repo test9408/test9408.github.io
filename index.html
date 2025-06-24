@@ -6,288 +6,360 @@
     <title>Selamat Datang, Master!</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Montserrat:wght@400;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
     <style>
+        /* Menggunakan font kustom */
         body {
-            font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Prevent scroll during transition */
-            background: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460); /* Dark blue to mimic night sky */
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0c0a18; /* Latar belakang ungu gelap yang dalam */
+            background-image:
+                radial-gradient(at 20% 25%, hsla(240, 60%, 15%, 0.8) 0px, transparent 50%),
+                radial-gradient(at 80% 75%, hsla(280, 50%, 12%, 0.8) 0px, transparent 50%),
+                radial-gradient(at 50% 95%, hsla(320, 45%, 18%, 0.8) 0px, transparent 50%);
+            overflow: hidden; /* Mencegah scroll */
         }
 
-        /* --- Kunang-kunang (Fireflies) Animation --- */
-        .firefly-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Allow clicks through */
-            z-index: 0; /* Behind other content */
+        h1 {
+            font-family: 'Orbitron', sans-serif;
         }
 
-        .firefly {
-            position: absolute;
-            background-color: #fce205; /* Yellowish glow */
-            border-radius: 50%;
-            opacity: 0; /* Start invisible */
-            animation: moveFirefly 15s infinite ease-in-out alternate;
-            box-shadow: 0 0 5px #fce205, 0 0 10px #fce205, 0 0 15px #fce205; /* Glow effect */
+        /* --- STYLING UTAMA --- */
+        .content-wrapper {
+            transition: filter 0.5s ease-in-out;
         }
-
-        /* Define specific firefly sizes and animation delays */
-        .firefly:nth-child(1) { width: 5px; height: 5px; top: 10%; left: 20%; animation-delay: 0s; animation-duration: 12s; }
-        .firefly:nth-child(2) { width: 4px; height: 4px; top: 30%; left: 70%; animation-delay: 2s; animation-duration: 14s; }
-        .firefly:nth-child(3) { width: 6px; height: 6px; top: 50%; left: 40%; animation-delay: 4s; animation-duration: 10s; }
-        .firefly:nth-child(4) { width: 3px; height: 3px; top: 70%; left: 10%; animation-delay: 6s; animation-duration: 16s; }
-        .firefly:nth-child(5) { width: 5px; height: 5px; top: 80%; left: 85%; animation-delay: 8s; animation-duration: 13s; }
-        .firefly:nth-child(6) { width: 4px; height: 4px; top: 20%; left: 50%; animation-delay: 1s; animation-duration: 11s; }
-        .firefly:nth-child(7) { width: 6px; height: 6px; top: 40%; left: 5%; animation-delay: 3s; animation-duration: 15s; }
-        .firefly:nth-child(8) { width: 3px; height: 3px; top: 60%; left: 90%; animation-delay: 5s; animation-duration: 9s; }
-        .firefly:nth-child(9) { width: 5px; height: 5px; top: 15%; left: 60%; animation-delay: 7s; animation-duration: 12.5s; }
-        .firefly:nth-child(10) { width: 4px; height: 4px; top: 90%; left: 30%; animation-delay: 9s; animation-duration: 10.5s; }
-
-        @keyframes moveFirefly {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0;
-            }
-            25% {
-                transform: translate(calc(var(--rand-x-1) * 1vw), calc(var(--rand-y-1) * 1vh)) scale(1.1);
-                opacity: 0.7;
-            }
-            50% {
-                transform: translate(calc(var(--rand-x-2) * 1vw), calc(var(--rand-y-2) * 1vh)) scale(1);
-                opacity: 0.3;
-            }
-            75% {
-                transform: translate(calc(var(--rand-x-3) * 1vw), calc(var(--rand-y-3) * 1vh)) scale(1.1);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translate(0, 0) scale(1);
-                opacity: 0;
-            }
-        }
-
-        /* Random values for firefly movement */
-        .firefly:nth-child(1) { --rand-x-1: 5; --rand-y-1: -10; --rand-x-2: -15; --rand-y-2: 5; --rand-x-3: 10; --rand-y-3: -5; }
-        .firefly:nth-child(2) { --rand-x-1: -10; --rand-y-1: 5; --rand-x-2: 10; --rand-y-2: -15; --rand-x-3: -5; --rand-y-3: 10; }
-        .firefly:nth-child(3) { --rand-x-1: 15; --rand-y-1: 10; --rand-x-2: -5; --rand-y-2: -10; --rand-x-3: 0; --rand-y-3: 15; }
-        .firefly:nth-child(4) { --rand-x-1: -5; --rand-y-1: -15; --rand-x-2: 10; --rand-y-2: 0; --rand-x-3: -10; --rand-y-3: -5; }
-        .firefly:nth-child(5) { --rand-x-1: 10; --rand-y-1: 5; --rand-x-2: -10; --rand-y-2: -5; --rand-x-3: 15; --rand-y-3: 10; }
-        .firefly:nth-child(6) { --rand-x-1: -8; --rand-y-1: 12; --rand-x-2: 7; --rand-y-2: -8; --rand-x-3: -13; --rand-y-3: 6; }
-        .firefly:nth-child(7) { --rand-x-1: 12; --rand-y-1: -7; --rand-x-2: -9; --rand-y-2: 11; --rand-x-3: 6; --rand-y-3: -14; }
-        .firefly:nth-child(8) { --rand-x-1: -15; --rand-y-1: -3; --rand-x-2: 14; --rand-y-2: 9; --rand-x-3: -7; --rand-y-3: -11; }
-        .firefly:nth-child(9) { --rand-x-1: 3; --rand-y-1: 10; --rand-x-2: -12; --rand-y-2: -6; --rand-x-3: 8; --rand-y-3: 13; }
-        .firefly:nth-child(10) { --rand-x-1: -10; --rand-y-1: -9; --rand-x-2: 5; --rand-y-2: 14; --rand-x-3: -11; --rand-y-3: -2; }
-
-        /* --- Ranting Pohon (Branches) Effect --- */
-        .branches {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1; /* Above fireflies, below content */
-            /* Using a subtle radial gradient to simulate branches by light */
-            background: radial-gradient(circle at 10% 20%, rgba(50, 30, 0, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 80%, rgba(50, 30, 0, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 30% 70%, rgba(50, 30, 0, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 70% 30%, rgba(50, 30, 0, 0.1) 0%, transparent 40%);
-            background-size: 80% 80%; /* Adjust size for effect */
-            background-repeat: no-repeat;
-            opacity: 0.8; /* Subtle visibility */
-        }
-
-
-        /* --- Transition Overlay --- */
-        #transition-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: transparent; /* Start transparent */
-            opacity: 0;
-            visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: white;
-            font-size: 3rem;
-            font-weight: bold;
-            z-index: 9999; /* On top of everything */
-            transition: background-color 1.5s ease-out, opacity 1.5s ease-out; /* Smooth transition to black */
-        }
-
-        #transition-overlay.active {
-            opacity: 1;
-            visibility: visible;
-            background-color: rgba(0, 0, 0, 1); /* Full black */
-        }
-
-        #transition-overlay .message {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-in, transform 0.5s ease-in;
-            margin-top: 1rem;
-        }
-
-        #transition-overlay .message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- Blur Effect for Body --- */
-        body.blur-active {
+        
+        /* Memberikan efek blur pada konten utama di belakang overlay */
+        .content-wrapper.blur-active {
             filter: blur(8px);
-            transition: filter 1s ease-out;
         }
 
-        /* --- Button Styling --- */
+        /* --- STYLING TOMBOL --- */
         .btn {
-            background: linear-gradient(145deg, #6a0572, #8e2de2); /* Purple gradient */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px; /* Fully rounded */
-            font-weight: 600;
-            font-size: 1.125rem;
+            font-family: 'Orbitron', sans-serif;
+            background: rgba(255, 255, 255, 0.05); /* Latar belakang transparan */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-            border: none;
-            cursor: pointer;
-            text-align: center;
-            white-space: nowrap; /* Prevent text wrapping */
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
         }
 
         .btn:hover {
-            background: linear-gradient(145deg, #8e2de2, #6a0572); /* Reverse gradient on hover */
-            transform: translateY(-3px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        /* --- STYLING OVERLAY TRANSISI --- */
+        #transition-overlay {
+            position: fixed;
+            inset: 0; /* Sama dengan top, right, bottom, left = 0 */
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: background-color 1s ease-in-out, opacity 1s ease-in-out, visibility 1s;
         }
+
+        #transition-overlay.active {
+            background-color: rgba(0, 0, 0, 1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .message-container {
+            opacity: 0;
+            filter: blur(15px);
+            transform: scale(0.8);
+            transition: opacity 1.5s ease-out, filter 1.5s ease-out, transform 1.5s ease-out;
+        }
+
+        #transition-overlay.show-content .message-container {
+            opacity: 1;
+            filter: blur(0px);
+            transform: scale(1);
+        }
+
+        .message-container p:first-child {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* --- STYLING BOLA KUNANG-KUNANG --- */
+        .firefly-spheres-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Agar tidak bisa di-klik */
+            opacity: 0;
+            transition: opacity 1s ease-in-out 1s; /* Muncul setelah 1 detik */
+        }
+        
+        #transition-overlay.show-content .firefly-spheres-container {
+            opacity: 1;
+        }
+
+        .sphere {
+            position: absolute;
+            width: 15vh; /* Ukuran responsif */
+            height: 15vh;
+            max-width: 120px; /* Batas ukuran maksimal */
+            max-height: 120px;
+            background: rgba(180, 180, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 0 20px rgba(150, 100, 255, 0.2);
+        }
+        
+        /* Posisi bola agar tidak menimpa teks di tengah */
+        .sphere-1 { top: 15%; left: 10%; }
+        .sphere-2 { top: 65%; left: 25%; }
+        .sphere-3 { top: 30%; right: 15%; }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        /* Penyesuaian untuk layar kecil (HP) */
+        @media (max-width: 768px) {
+            .sphere {
+                width: 18vw;
+                height: 18vw;
+            }
+            .sphere-1 { top: 10%; left: 5%; }
+            .sphere-2 { top: 75%; left: 15%; }
+            .sphere-3 { top: 20%; right: 5%; }
+        }
+        
+        /* Animasi fade out untuk semua elemen di overlay */
+        #transition-overlay.fade-out .message-container,
+        #transition-overlay.fade-out .firefly-spheres-container {
+            opacity: 0;
+            filter: blur(10px);
+            transition: opacity 1.5s ease-in, filter 1.5s ease-in;
+        }
+
     </style>
 </head>
-<body>
-    <!-- Firefly Container -->
-    <div class="firefly-container">
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-        <div class="firefly"></div>
-    </div>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
 
-    <!-- Branches Effect -->
-    <div class="branches"></div>
+    <!-- Konten Utama -->
+    <main id="main-content" class="content-wrapper w-full">
+        <div class="text-center z-10 relative">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-black mb-4 text-shadow-lg">
+                Hello Welcome Master!
+            </h1>
+            <p class="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+                Pilih tujuan Anda selanjutnya dari opsi di bawah ini.
+            </p>
+            
+            <!-- Grid untuk Tombol (Mudah di-copy-paste) -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                
+                <!-- Tombol 1: Copy dari sini -->
+                <button class="btn w-full py-3 text-lg" onclick="handleButtonClick('a.html')">
+                    Menu Utama
+                </button>
+                <!-- Sampai sini -->
 
-    <main class="relative z-10 flex flex-col items-center justify-center p-8 max-w-4xl mx-auto min-h-screen">
-        <h1 class="text-5xl md:text-6xl font-extrabold mb-12 text-center leading-tight">
-            Hello Welcome Master!
-        </h1>
+                <!-- Tombol 2 -->
+                <button class="btn w-full py-3 text-lg" onclick="handleButtonClick('b.html')">
+                    Project A
+                </button>
 
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 w-full">
-            <!-- Contoh Tombol 1 -->
-            <button class="btn" onclick="handleButtonClick('a.html')">
-                Menu Utama
-            </button>
-            <!-- Contoh Tombol 2 -->
-            <button class="btn" onclick="handleButtonClick('#link2')">
-                Project A
-            </button>
-            <!-- Contoh Tombol 3 -->
-            <button class="btn" onclick="handleButtonClick('#link3')">
-                Tentang Kami
-            </button>
-            <!-- Contoh Tombol 4 -->
-            <button class="btn" onclick="handleButtonClick('#link4')">
-                Galeri Foto
-            </button>
-            <!-- Contoh Tombol 5 -->
-            <button class="btn" onclick="handleButtonClick('#link5')">
-                Kontak
-            </button>
-            <!-- Contoh Tombol 6 -->
-            <button class="btn" onclick="handleButtonClick('#link6')">
-                Layanan
-            </button>
-            <!-- Contoh Tombol 7 -->
-            <button class="btn" onclick="handleButtonClick('#link7')">
-                Blog Terbaru
-            </button>
-            <!-- Contoh Tombol 8 -->
-            <button class="btn" onclick="handleButtonClick('#link8')">
-                Portfolio
-            </button>
-            <!-- Contoh Tombol 9 -->
-            <button class="btn" onclick="handleButtonClick('#link9')">
-                Testimoni
-            </button>
-            <!-- Contoh Tombol 10 -->
-            <button class="btn" onclick="handleButtonClick('#link10')">
-                Dukungan
-            </button>
+                <!-- Tombol 3 -->
+                <button class="btn w-full py-3 text-lg" onclick="handleButtonClick('#link3')">
+                    Tentang Kami
+                </button>
+
+                <!-- Tombol 4 -->
+                <button class="btn w-full py-3 text-lg" onclick="handleButtonClick('#link4')">
+                    Galeri Foto
+                </button>
+
+                <!-- Tombol 5 -->
+                <button class="btn w-full py-3 text-lg" onclick="handleButtonClick('#link5')">
+                    Kontak
+                </button>
+
+                <!-- Tombol 6 -->
+                <button class="btn w-full py-3 text-lg" onclick="handleButtonClick('#link6')">
+                    Layanan
+                </button>
+
+                <!-- Anda bisa menambahkan lebih banyak tombol dengan meng-copy blok tombol di atas -->
+            </div>
         </div>
     </main>
 
-    <!-- Transition Overlay -->
-    <div id="transition-overlay">
-        <div class="message text-center">
-            <p class="text-6xl font-extrabold">Semangat!</p>
-            <p class="text-2xl mt-4">Terima kasih telah berkunjung master.</p>
+    <!-- Overlay untuk Transisi Halaman -->
+    <div id="transition-overlay" class="hidden">
+        
+        <!-- Wadah untuk bola-bola transparan -->
+        <div class="firefly-spheres-container">
+            <div class="sphere sphere-1"><canvas id="canvas1"></canvas></div>
+            <div class="sphere sphere-2"><canvas id="canvas2"></canvas></div>
+            <div class="sphere sphere-3"><canvas id="canvas3"></canvas></div>
+        </div>
+        
+        <!-- Wadah untuk pesan teks -->
+        <div class="message-container text-center">
+            <p class="text-5xl md:text-8xl">Semangat!</p>
+            <p class="text-xl md:text-3xl mt-4 text-gray-300">Terima kasih telah mengunjungi kami master</p>
         </div>
     </div>
 
     <script>
-        // Fungsi untuk menangani klik tombol
-        function handleButtonClick(targetUrl) {
-            const body = document.body;
-            const overlay = document.getElementById('transition-overlay');
-            const message = overlay.querySelector('.message');
+        // Mengambil elemen-elemen DOM
+        const mainContent = document.getElementById('main-content');
+        const overlay = document.getElementById('transition-overlay');
+        
+        let animationFrameId; // Untuk menyimpan ID dari requestAnimationFrame
+        let ongoingTimeout = null; // Untuk mencegah klik ganda
 
-            // 1. Terapkan blur ke seluruh body
-            body.classList.add('blur-active');
+        // Fungsi untuk menggambar dan menganimasikan kunang-kunang
+        function setupFireflies(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            let fireflies = [];
+            const sphereRadius = canvas.width / 2;
 
-            // 2. Aktifkan overlay dan mulai transisi ke hitam
-            overlay.classList.add('active');
+            // Menyesuaikan ukuran canvas dengan elemennya
+            function resizeCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                const rect = canvas.getBoundingClientRect();
+                canvas.width = rect.width * dpr;
+                canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
 
-            // 3. Setelah 1.5 detik (sesuai transisi background-color), tampilkan pesan
-            setTimeout(() => {
-                message.classList.add('show');
-            }, 1500); // Waktu ini harus cocok dengan transisi background-color overlay
 
-            // 4. Setelah total 5 detik, lakukan pengalihan halaman
-            setTimeout(() => {
-                window.location.href = targetUrl;
-            }, 5000); // Total delay sebelum redirect
+            // Membuat kunang-kunang baru
+            function createFireflies() {
+                fireflies = [];
+                const numFireflies = Math.floor(Math.random() * 3) + 1; // 1 sampai 3 kunang-kunang
+                for (let i = 0; i < numFireflies; i++) {
+                    fireflies.push({
+                        x: Math.random() * canvas.clientWidth,
+                        y: Math.random() * canvas.clientHeight,
+                        radius: Math.random() * 2 + 1,
+                        vx: (Math.random() - 0.5) * 0.5,
+                        vy: (Math.random() - 0.5) * 0.5,
+                        alpha: Math.random() * 0.5 + 0.5,
+                    });
+                }
+            }
+            
+            // Menggambar kunang-kunang
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                fireflies.forEach(f => {
+                    ctx.beginPath();
+                    ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 180, ${f.alpha})`;
+                    
+                    // Efek cahaya (glow)
+                    ctx.shadowColor = 'rgba(255, 255, 100, 0.8)';
+                    ctx.shadowBlur = 10;
+                    
+                    ctx.fill();
+                    ctx.closePath();
+                    
+                    // Reset shadow untuk elemen berikutnya
+                    ctx.shadowBlur = 0;
+                });
+            }
+
+            // Memperbarui posisi kunang-kunang
+            function update() {
+                fireflies.forEach(f => {
+                    f.x += f.vx;
+                    f.y += f.vy;
+
+                    // Memantul dari tepi "tak terlihat" di dalam lingkaran
+                    const dist = Math.sqrt(Math.pow(f.x - canvas.clientWidth / 2, 2) + Math.pow(f.y - canvas.clientHeight / 2, 2));
+                    if (dist + f.radius > canvas.clientWidth / 2) {
+                        f.vx *= -1;
+                        f.vy *= -1;
+                        // Dorong sedikit kembali agar tidak terjebak
+                        f.x += f.vx * 2;
+                        f.y += f.vy * 2;
+                    }
+
+                    // Perubahan kecepatan acak
+                    if (Math.random() > 0.98) {
+                       f.vx = (Math.random() - 0.5) * 0.5;
+                       f.vy = (Math.random() - 0.5) * 0.5;
+                    }
+                });
+            }
+
+            // Loop animasi utama
+            function animate() {
+                update();
+                draw();
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            // Menginisialisasi dan memulai
+            createFireflies();
+            animate();
         }
 
-        // Generate random initial positions for fireflies (optional, but makes them spread out)
-        document.querySelectorAll('.firefly').forEach(firefly => {
-            const top = Math.random() * 100;
-            const left = Math.random() * 100;
-            firefly.style.top = `${top}vh`;
-            firefly.style.left = `${left}vw`;
-        });
+
+        // Fungsi utama untuk menangani klik tombol
+        function handleButtonClick(targetUrl) {
+            // Jika ada animasi yang berjalan, hentikan dan reset
+            if (ongoingTimeout) {
+                clearTimeout(ongoingTimeout);
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            // 1. Tampilkan overlay dan mulai menghitamkan background
+            overlay.classList.remove('hidden', 'fade-out', 'show-content');
+            mainContent.classList.add('blur-active'); // Blur konten di belakang
+            overlay.classList.add('active');
+            
+            // Inisialisasi kunang-kunang
+            setupFireflies('canvas1');
+            setupFireflies('canvas2');
+            setupFireflies('canvas3');
+
+            // Jadwalkan urutan animasi
+            ongoingTimeout = setTimeout(() => {
+                // 2. (Setelah 1 detik) Tampilkan teks dan kunang-kunang
+                overlay.classList.add('show-content');
+
+                ongoingTimeout = setTimeout(() => {
+                    // 3. (Setelah 3 detik) Mulai proses fade out
+                    overlay.classList.add('fade-out');
+
+                    ongoingTimeout = setTimeout(() => {
+                         // 4. (Setelah 2 detik) Pindah halaman setelah semuanya menghitam
+                         // Tunggu 1 detik tambahan agar transisi benar-benar selesai
+                        setTimeout(() => {
+                           window.location.href = targetUrl;
+                        }, 1000);
+
+                    }, 2000); // Durasi fade-out
+
+                }, 3000); // Durasi teks dan kunang-kunang terlihat jelas
+
+            }, 1000); // Durasi menghitamkan layar awal
+        }
+
     </script>
 </body>
 </html>

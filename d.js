@@ -19,7 +19,7 @@ let videoFile = null;
 // KODE BARU (SOLUSI)
 const ffmpeg = createFFmpeg({
     log: true,
-    mainName: 'main', // Tambahkan ini
+    corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
     // corePath dihapus agar ffmpeg bisa memilih core yang tepat
 });
 

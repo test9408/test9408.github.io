@@ -1,112 +1,106 @@
 const { createFFmpeg, fetchFile } = FFmpeg;
-const ffmpeg = createFFmpeg({ log: true, corePath: 'https://unpkg.com/@ffmpeg/core@0.12.4/dist/ffmpeg-core.js' });
 
-const videoUpload = document.getElementById('video-upload');
+// Mengambil elemen dari HTML
+const uploader = document.getElementById('uploader');
+const editor = document.getElementById('editor');
+const processing = document.getElementById('processing');
+const videoInput = document.getElementById('video-input');
 const videoPlayer = document.getElementById('video-player');
-const cutButton = document.getElementById('cut-button');
-const loadingStatus = document.getElementById('loading-status');
-const editorContainer = document.getElementById('editor-container');
 const startTimeInput = document.getElementById('start-time');
 const endTimeInput = document.getElementById('end-time');
-const startDisplay = document.getElementById('start-display');
-const endDisplay = document.getElementById('end-display');
+const cutButton = document.getElementById('cut-button');
+const statusText = document.getElementById('status-text');
 const downloadLink = document.getElementById('download-link');
+const loader = document.querySelector('.loader');
 
-let videoDuration = 0;
+let videoFile = null;
 
-// --- A. Upload dan Inisialisasi Player ---
-videoUpload.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const videoURL = URL.createObjectURL(file);
-        videoPlayer.src = videoURL;
-        editorContainer.style.display = 'block';
-        loadingStatus.textContent = 'Video siap diedit. Tunggu video dimuat.';
+// Setup FFMPEG
+const ffmpeg = createFFmpeg({
+    log: true, // Tampilkan log proses di console browser untuk debugging
+    corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js', // Membutuhkan path ini agar FFMPEG berjalan
+});
+
+// Fungsi untuk memuat FFMPEG saat pertama kali
+const loadFFmpeg = async () => {
+    if (!ffmpeg.isLoaded()) {
+        await ffmpeg.load();
+    }
+};
+
+loadFFmpeg(); // Langsung muat FFMPEG saat halaman dibuka
+
+// Event listener untuk input file
+videoInput.addEventListener('change', (event) => {
+    videoFile = event.target.files[0];
+    if (videoFile) {
+        const fileURL = URL.createObjectURL(videoFile);
+        videoPlayer.src = fileURL;
+
+        // Tampilkan editor setelah video dipilih
+        uploader.classList.add('hidden');
+        editor.classList.remove('hidden');
+
+        // Saat metadata video sudah termuat, atur nilai maksimal untuk end time
+        videoPlayer.onloadedmetadata = () => {
+            endTimeInput.value = videoPlayer.duration.toFixed(1);
+            endTimeInput.max = videoPlayer.duration.toFixed(1);
+        };
     }
 });
 
-// Setelah video termuat dan durasi diketahui
-videoPlayer.addEventListener('loadedmetadata', () => {
-    videoDuration = videoPlayer.duration;
-    
-    // Atur slider max ke durasi total
-    startTimeInput.max = videoDuration;
-    endTimeInput.max = videoDuration;
-    endTimeInput.value = videoDuration;
-    
-    // Perbarui tampilan waktu awal
-    startTimeInput.addEventListener('input', updateTimeDisplay);
-    endTimeInput.addEventListener('input', updateTimeDisplay);
-    
-    updateTimeDisplay();
-    loadingStatus.textContent = 'Video dimuat. Pilih durasi potongan.';
-});
-
-function updateTimeDisplay() {
-    const start = parseFloat(startTimeInput.value).toFixed(2);
-    const end = parseFloat(endTimeInput.value).toFixed(2);
-
-    startDisplay.textContent = `${start}s`;
-    endDisplay.textContent = `${end}s`;
-    
-    // Pindahkan player ke waktu awal saat menggeser
-    videoPlayer.currentTime = start;
-}
-
-// --- B. Logika Pemotongan Video ---
+// Event listener untuk tombol "Potong Video"
 cutButton.addEventListener('click', async () => {
-    if (!videoPlayer.src) {
-        alert('Silahkan upload video terlebih dahulu.');
+    // Sembunyikan editor dan tampilkan area proses
+    editor.classList.add('hidden');
+    processing.classList.remove('hidden');
+    downloadLink.classList.add('hidden');
+    loader.style.display = 'block';
+
+    const startTime = startTimeInput.value;
+    const endTime = endTimeInput.value;
+
+    if (parseFloat(startTime) >= parseFloat(endTime)) {
+        alert("Waktu mulai harus lebih kecil dari waktu selesai!");
+        processing.classList.add('hidden');
+        editor.classList.remove('hidden');
         return;
     }
 
-    loadingStatus.textContent = 'Menginisialisasi FFMPEG...';
-    cutButton.disabled = true;
-
-    // Pastikan ffmpeg sudah dimuat
-    if (!ffmpeg.is
-        Loaded()) {
-        await ffmpeg.load();
-    }
+    statusText.textContent = 'Mempersiapkan file video...';
 
     try {
-        const start = parseFloat(startTimeInput.value);
-        const end = parseFloat(endTimeInput.value);
-        const duration = end - start;
+        // 1. Menulis file video ke memori virtual FFMPEG
+        ffmpeg.FS('writeFile', videoFile.name, await fetchFile(videoFile));
+        statusText.textContent = 'Memulai proses pemotongan... Ini mungkin butuh beberapa saat.';
 
-        // Mendapatkan file dari upload
-        const inputFileName = 'input.mp4';
-        const uploadedFile = videoUpload.files[0];
+        // 2. Menjalankan command FFMPEG
+        // -i: file input
+        // -ss: waktu mulai (seek start)
+        // -to: waktu selesai (seek to)
+        // -c copy: Menyalin codec video & audio (sangat cepat, tanpa re-encoding)
+        await ffmpeg.run('-i', videoFile.name, '-ss', startTime, '-to', endTime, '-c', 'copy', 'output.mp4');
 
-        // Menulis file ke Virtual File System (FS) ffmpeg
-        loadingStatus.textContent = 'Menulis file video ke memori...';
-        ffmpeg.FS('writeFile', inputFileName, await fetchFile(uploadedFile));
+        statusText.textContent = 'Proses selesai! Menyiapkan file untuk diunduh...';
 
-        // Perintah Cutting FFMPEG: -ss start_time -i input -t duration output
-        loadingStatus.textContent = 'Memotong video (Client-Side Processing)...';
-        await ffmpeg.run(
-            '-ss', `${start}`,
-            '-i', inputFileName,
-            '-t', `${duration}`, // -t (duration) lebih akurat daripada -to (end time) saat -ss ada di awal
-            '-c', 'copy', // Menggunakan 'copy' untuk pemotongan cepat (lossless) tanpa re-encode
-            'output.mp4'
-        );
-
-        // Membaca file hasil potongan dari Virtual FS
-        loadingStatus.textContent = 'Selesai! Membuat link download.';
+        // 3. Membaca file hasil dari memori virtual
         const data = ffmpeg.FS('readFile', 'output.mp4');
 
-        // Membuat Blob dan URL untuk download
+        // 4. Membuat URL yang bisa diunduh dari data hasil
         const blob = new Blob([data.buffer], { type: 'video/mp4' });
-        downloadLink.href = URL.createObjectURL(blob);
-        downloadLink.download = 'cut_video.mp4';
-        downloadLink.style.display = 'block';
-        downloadLink.textContent = 'Download cut_video.mp4';
+        const url = URL.createObjectURL(blob);
+
+        downloadLink.href = url;
+        downloadLink.download = `potongan_${videoFile.name}`; // Nama file hasil
+        
+        // Tampilkan tombol unduh
+        loader.style.display = 'none';
+        downloadLink.classList.remove('hidden');
+        statusText.textContent = 'Video Anda siap diunduh!';
 
     } catch (error) {
         console.error(error);
-        loadingStatus.textContent = 'Terjadi kesalahan saat pemotongan: ' + error.message;
-    } finally {
-        cutButton.disabled = false;
+        statusText.textContent = 'Terjadi kesalahan saat memproses video.';
+        loader.style.display = 'none';
     }
 });

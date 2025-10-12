@@ -1,0 +1,36 @@
+#video-player {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px 0;
+}
+
+#timeline {
+    position: relative;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
+#start-time, #end-time {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+    margin: 0;
+}
+
+/* Sedikit styling untuk handle-nya agar terlihat */
+#start-time::-webkit-slider-thumb, #end-time::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 15px;
+    width: 15px;
+    background: #4CAF50;
+    border: 1px solid white;
+    border-radius: 3px;
+}
+
+#end-time::-webkit-slider-thumb {
+    background: #f44336;
+}

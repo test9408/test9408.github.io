@@ -1,33 +1,49 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Web Editor Video Tahap 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahap 1: Video Cutter</title>
     <link rel="stylesheet" href="d.css">
 </head>
 <body>
-    <h1>Web Video Cutter (Tahap 1)</h1>
-    
-    <input type="file" id="video-upload" accept="video/*">
-    <p id="loading-status">Silahkan upload video Anda.</p>
-    
-    <div id="editor-container" style="display: none;">
-        <video id="video-player" controls muted></video>
-        
-        <div id="timeline">
-            <input type="range" id="start-time" min="0" max="100" value="0">
-            <input type="range" id="end-time" min="0" max="100" value="100">
-            <div id="range-display"></div>
+    <div class="container">
+        <h1>🎬 Video Cutter Sederhana</h1>
+        <p>Langkah pertama menuju editor video canggih Anda. Semua proses dilakukan di browser Anda.</p>
+
+        <div id="uploader" class="card">
+            <h2>1. Upload Video Anda</h2>
+            <input type="file" id="video-input" accept="video/*">
+            <label for="video-input" class="upload-button">Pilih File</label>
         </div>
-        
-        <p>Potong dari: <span id="start-display">0.00s</span> sampai: <span id="end-display">0.00s</span></p>
-        
-        <button id="cut-button">Potong Video</button>
-        
-        <a id="download-link" style="display: none;">Download Video Hasil Potongan</a>
+
+        <div id="editor" class="card hidden">
+            <h2>2. Tentukan Durasi Potong</h2>
+            <video id="video-player" controls></video>
+            
+            <div class="timeline-controls">
+                <div class="time-input">
+                    <label for="start-time">Mulai (detik):</label>
+                    <input type="number" id="start-time" value="0" min="0" step="0.1">
+                </div>
+                <div class="time-input">
+                    <label for="end-time">Selesai (detik):</label>
+                    <input type="number" id="end-time" value="10" min="0" step="0.1">
+                </div>
+            </div>
+
+            <button id="cut-button">Potong Video</button>
+        </div>
+
+        <div id="processing" class="card hidden">
+            <h2>3. Proses & Unduh Hasil</h2>
+            <div class="loader"></div>
+            <p id="status-text">Memuat library FFMPEG...</p>
+            <a id="download-link" class="download-button hidden">Unduh Video Hasil Potong</a>
+        </div>
     </div>
 
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.12.7/dist/ffmpeg.min.js"></script>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.2/dist/ffmpeg.min.js"></script>
     <script src="d.js"></script>
 </body>
 </html>

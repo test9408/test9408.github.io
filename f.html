@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Dokumen DOCX Sederhana</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+        h1 { color: #333; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        textarea { height: 150px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; margin-top: 20px; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        #status { margin-top: 20px; color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>📝 Isi Formulir Laporan Praktikum</h1>
+    <p>Isi data di bawah ini, dan klik tombol untuk membuat file DOCX secara otomatis.</p>
+    
+    <form id="docForm">
+        <label for="judul">Judul Dokumen (Contoh: Laporan Praktikum (Warming cabinet)):</label>
+        <input type="text" id="judul" value="Laporan Praktikum (Warming cabinet)" required>
+
+        <label for="penulis">Nama Penulis (Contoh: afif arsalan):</label>
+        <input type="text" id="penulis" value="afif arsalan" required>
+
+        <label for="latar_belakang">1. LATAR BELAKANG:</label>
+        <textarea id="latar_belakang" required></textarea>
+
+        <label for="isi_utama">2. ISI UTAMA:</label>
+        <textarea id="isi_utama" required></textarea>
+
+        <label for="kesimpulan">3. KESIMPULAN:</label>
+        <textarea id="kesimpulan" required></textarea>
+
+        <button type="button" onclick="generateDocument()">Buat & Unduh DOCX</button>
+    </form>
+    
+    <div id="status"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.44.2/docxtemplater.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.44.2/modules/docxtemplater-image-module-browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/pizzip@3.1.6/dist/pizzip-utils.js"></script> 
+
+    <script>
+        document.getElementById('status').textContent = 'Siap. Pastikan file "template.docx" ada di folder yang sama.';
+
+        function loadFile(url, callback) {
+            PizZipUtils.getBinaryContent(url, function(err, data) {
+                if (err) {
+                    // Tampilkan pesan error jika template tidak ditemukan
+                    document.getElementById('status').textContent = 'Gagal memuat template. Pastikan "template.docx" ada di folder yang sama.';
+                    throw err;
+                }
+                callback(data);
+            });
+        }
+
+        function generateDocument() {
+            document.getElementById('status').textContent = 'Membuat dokumen... Mohon tunggu.';
+
+            // 1. Kumpulkan data dari formulir
+            const dataInput = {
+                judul_dokumen: document.getElementById('judul').value,
+                nama_penulis: document.getElementById('penulis').value,
+                latar_belakang: document.getElementById('latar_belakang').value,
+                isi_utama: document.getElementById('isi_utama').value,
+                kesimpulan: document.getElementById('kesimpulan').value,
+            };
+
+            // 2. Muat Template DOCX
+            loadFile('template.docx', function(content) {
+                try {
+                    const zip = new PizZip(content);
+                    const doc = new docxtemplater(zip, {
+                        paragraphLoop: true,
+                        linebreaks: true, // Agar baris baru dari textarea bisa dipertahankan
+                    });
+
+                    // 3. Isi Placeholder
+                    doc.setData(dataInput);
+                    doc.render(); 
+
+                    // 4. Hasilkan Blob dan Unduh File
+                    const out = doc.getZip().generate({
+                        type: "blob",
+                        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                        compression: "DEFLATE",
+                    });
+
+                    // Gunakan FileSaver.js untuk mengunduh
+                    saveAs(out, `Laporan_${dataInput.nama_penulis}_${new Date().getFullYear()}.docx`);
+                    document.getElementById('status').textContent = '✅ Dokumen berhasil dibuat dan diunduh!';
+
+                } catch (error) {
+                    console.error("Kesalahan saat membuat dokumen:", error);
+                    document.getElementById('status').textContent = '❌ Terjadi kesalahan saat memproses dokumen.';
+                    // Tampilkan detail error jika ada
+                    if (error.properties && error.properties.explanation) {
+                         document.getElementById('status').textContent += ' Detail: ' + error.properties.explanation;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

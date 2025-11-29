@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docx Fill & Download (Client-Side)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.47.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.47.1/modules/block-to-html.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+            color: #343a40;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .section-header {
+            margin-top: 30px;
+            color: #6c757d;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        .input-list-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .input-list-item input {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🖊️ Isi Dokumen (.docx) Secara Otomatis</h1>
+        <p>Isi formulir di bawah. Dokumen <code>template.docx</code> akan diisi dan diunduh tanpa server.</p>
+
+        <div class="form-group">
+            <label for="nomor_dokumen">Nomor Dokumen:</label>
+            <input type="text" id="nomor_dokumen" value="SPK/2025/001" required>
+        </div>
+        <div class="form-group">
+            <label for="tanggal_hari_ini">Tanggal Hari Ini (Format bebas):</label>
+            <input type="text" id="tanggal_hari_ini" value="29 November 2025" required>
+        </div>
+        <div class="form-group">
+            <label for="nama_pihak_1">Nama Pihak Pertama:</label>
+            <input type="text" id="nama_pihak_1" value="PT Solusi Digital Global" required>
+        </div>
+        <div class="form-group">
+            <label for="nama_proyek">Nama Proyek:</label>
+            <input type="text" id="nama_proyek" value="Pengembangan Website E-Commerce" required>
+        </div>
+        <div class="form-group">
+            <label for="durasi_proyek">Durasi Proyek:</label>
+            <input type="text" id="durasi_proyek" value="6 Bulan" required>
+        </div>
+
+        <div class="section-header">Detail Proyek (List - Tambahkan Tugas)</div>
+        <div id="detail_container">
+            </div>
+        <button type="button" onclick="tambahItemDetail()">+ Tambah Tugas</button>
+        <hr style="margin: 20px 0;">
+
+        <button onclick="prosesDanUnduh()">💾 Proses dan Unduh Dokumen</button>
+    </div>
+
+    <script>
+        // Fungsi untuk mengkonversi template.docx menjadi ArrayBuffer
+        function loadFile(url, callback) {
+            JSZipUtils.getBinaryContent(url, function(err, data) {
+                if (err) {
+                    throw err;
+                }
+                callback(data);
+            });
+        }
+
+        // State untuk mengurus list input
+        let detailItems = [];
+        const detailContainer = document.getElementById('detail_container');
+
+        // Tambah item Tugas/Status ke list
+        function tambahItemDetail() {
+            const index = detailItems.length;
+            detailItems.push({}); // Tambahkan objek kosong
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'input-list-item';
+            itemDiv.id = `item-${index}`;
+            
+            itemDiv.innerHTML = `
+                <input type="text" placeholder="Tugas (e.g., Desain UI)" oninput="updateDetailItem(${index}, 'tugas', this.value)">
+                <input type="text" placeholder="Status (e.g., Selesai)" oninput="updateDetailItem(${index}, 'status', this.value)">
+                <button type="button" style="background-color: #dc3545;" onclick="hapusItemDetail(${index})">X</button>
+            `;
+            detailContainer.appendChild(itemDiv);
+            
+            // Set nilai default
+            updateDetailItem(index, 'tugas', document.querySelector(`#item-${index} input:nth-child(1)`).value);
+            updateDetailItem(index, 'status', document.querySelector(`#item-${index} input:nth-child(2)`).value);
+        }
+
+        // Update data list saat input diubah
+        function updateDetailItem(index, key, value) {
+            detailItems[index][key] = value;
+        }
+
+        // Hapus item dari list
+        function hapusItemDetail(index) {
+            detailItems.splice(index, 1); // Hapus dari array
+            const element = document.getElementById(`item-${index}`);
+            if (element) {
+                element.remove();
+            }
+            // Perlu rebuild UI atau logika yang lebih kompleks untuk index, 
+            // tapi untuk demo sederhana, ini cukup.
+        }
+
+        // Panggil saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            tambahItemDetail(); // Tambahkan satu item awal
+            // Nilai default untuk demo
+            updateDetailItem(0, 'tugas', 'Analisis Kebutuhan');
+            updateDetailItem(0, 'status', 'Selesai');
+        });
+
+        // Fungsi Inti: Proses data dan unduh
+        function prosesDanUnduh() {
+            // 1. Kumpulkan Data dari Formulir
+            const data = {
+                nomor_dokumen: document.getElementById('nomor_dokumen').value,
+                tanggal_hari_ini: document.getElementById('tanggal_hari_ini').value,
+                nama_pihak_1: document.getElementById('nama_pihak_1').value,
+                nama_proyek: document.getElementById('nama_proyek').value,
+                durasi_proyek: document.getElementById('durasi_proyek').value,
+                // Data List yang sudah dikumpulkan dari fungsi updateDetailItem
+                detail: detailItems.filter(item => item.tugas || item.status) // Filter item kosong
+            };
+
+            // 2. Load Template dan Proses
+            loadFile('template.docx', function(content) {
+                const zip = new JSZip(content);
+                const doc = new window.docxtemplater(zip, {
+                    paragraphLoop: true,
+                    linebreaks: true,
+                });
+
+                try {
+                    // Terapkan data ke dalam dokumen
+                    doc.setData(data);
+                    doc.render();
+                } catch (error) {
+                    console.error("Kesalahan saat merender dokumen:", error);
+                    alert("Gagal memproses dokumen. Pastikan semua placeholder sudah benar!");
+                    return;
+                }
+
+                // 3. Generate dan Download
+                const out = doc.getZip().generate({
+                    type: "blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                });
+                
+                // Simpan file menggunakan FileSaver.js
+                saveAs(out, `Dokumen_Kerjasama_${data.nomor_dokumen}.docx`);
+                alert("Dokumen berhasil diproses dan diunduh!");
+            });
+        }
+    </script>
+
+</body>
+</html>

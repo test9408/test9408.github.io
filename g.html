@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Math Speed Challenge</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent: #38bdf8;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #progress-container {
+            width: 100%;
+            height: 10px;
+            background: #1e293b;
+            position: fixed;
+            top: 0;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.1s linear;
+        }
+        #score-display {
+            position: fixed;
+            top: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        #game-container {
+            margin-top: 25vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+        }
+        #question {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        #answer {
+            background: transparent;
+            border: none;
+            border-bottom: 4px solid var(--accent);
+            color: white;
+            font-size: 5rem;
+            width: 100%;
+            text-align: center;
+            outline: none;
+            padding: 10px 0;
+        }
+        /* Menghilangkan spin button di input number */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    
+    <div id="score-display">Poin: 0</div>
+
+    <div id="game-container">
+        <div id="question">-- x --</div>
+        <input type="number" id="answer" inputmode="numeric" autofocus>
+    </div>
+
+    <script>
+        const questionEl = document.getElementById('question');
+        const answerEl = document.getElementById('answer');
+        const scoreEl = document.getElementById('score-display');
+        const progressEl = document.getElementById('progress-bar');
+
+        let currentScore = 0;
+        let correctAnswer = 0;
+        let timer;
+
+        // Fokus otomatis ke input
+        window.onload = () => {
+            answerEl.focus();
+            generateQuestion();
+            startDegradationTimer();
+        };
+
+        // Menjaga agar keyboard tetap terbuka di mobile
+        document.addEventListener('click', () => answerEl.focus());
+
+        function generateQuestion() {
+            let n1, n2;
+
+            if (currentScore < 10) {
+                // Level 1: Satuan (3-9)
+                do {
+                    n1 = Math.floor(Math.random() * 7) + 3;
+                    n2 = Math.floor(Math.random() * 7) + 3;
+                } while (n1 === n2);
+            } else if (currentScore < 50) {
+                // Level 2: Puluhan (10-99)
+                do {
+                    n1 = Math.floor(Math.random() * 90) + 10;
+                    n2 = Math.floor(Math.random() * 90) + 10;
+                } while (n1 === n2);
+            } else {
+                // Level 3: Ratusan (100-999)
+                do {
+                    n1 = Math.floor(Math.random() * 900) + 100;
+                    n2 = Math.floor(Math.random() * 900) + 100;
+                } while (n1 === n2);
+            }
+
+            correctAnswer = n1 * n2;
+            questionEl.innerText = `${n1} × ${n2}`;
+            answerEl.value = '';
+        }
+
+        answerEl.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            if (val === correctAnswer) {
+                const pointsToAdd = (currentScore < 10) ? 2 : 5;
+                updateScore(pointsToAdd);
+                generateQuestion();
+            }
+        });
+
+        function updateScore(points) {
+            currentScore += points;
+            scoreEl.innerText = `Poin: ${currentScore}`;
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            // Visualisasi progress bar (maksimal di 50 poin untuk indikasi level)
+            const percentage = Math.min((currentScore / 50) * 100, 100);
+            progressEl.style.width = percentage + '%';
+        }
+
+        function startDegradationTimer() {
+            setInterval(() => {
+                if (currentScore > 0) {
+                    currentScore -= 1;
+                    scoreEl.innerText = `Poin: ${currentScore}`;
+                    updateProgressBar();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

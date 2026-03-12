@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matriks Produktivitas Dinamis</title>
+    <style>
+        :root {
+            --text-dark: #2c3e50; /* Warna teks gelap yang elegan */
+            --glass-bg: rgba(255, 255, 255, 0.25); /* Panel kaca semi-transparan */
+            --border: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Layer Dasar: Gradasi Warna Dinamis yang Halus */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            /* Definisi Gradasi: Campuran warna nyaman */
+            background: linear-gradient(135deg, #FFB347, #FFCC33, #FF6F61, #F4A460);
+            background-size: 400% 400%; /* Ukuran latar belakang besar untuk animasi halus */
+            animation: gradientAnimation 20s ease infinite; /* Animasi bergerak lambat */
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Canvas: Dipastikan Transparan Total agar Latar Belakang Terlihat */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Di atas background, di bawah container */
+            pointer-events: none; /* Klik tembus ke elemen di bawahnya */
+            background: transparent !important;
+        }
+
+        .container {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            width: 100vw;
+            height: 100vh;
+            padding: 12px;
+            z-index: 10; /* Di atas segalanya */
+        }
+
+        .quadrant {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px); /* Efek blur kaca */
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        /* Interaksi visual saat hover (opsional, memberikan feedback) */
+        .quadrant:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .label {
+            font-size: clamp(8px, 2.5vw, 11px);
+            font-weight: 900;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid rgba(0, 0, 0, 0.1);
+            opacity: 0.8;
+            display: flex;
+            align-items: center;
+        }
+        
+        .label-icon {
+            margin-right: 5px;
+            font-size: 1.2em;
+        }
+
+        .content {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text-dark);
+            font-size: clamp(10px, 3.5vw, 16px);
+            font-weight: 600;
+            line-height: 1.4;
+            outline: none;
+            resize: none;
+            overflow-y: auto;
+        }
+
+        /* Warna Aksen per Kuadran dengan Nuansa Psikologis */
+        .q1 { border-top: 6px solid #e74c3c; /* Merah: Mendesak & Penting */ }
+        .q2 { border-top: 6px solid #3498db; /* Biru: Penting, Tidak Mendesak (Fokus Strategis) */ }
+        .q3 { border-top: 6px solid #f1c40f; /* Kuning: Mendesak, Tidak Penting */ }
+        .q4 { border-top: 6px solid #7f8c8d; /* Abu-abu: Tidak Mendesak & Tidak Penting */ }
+
+        .content::placeholder { color: rgba(44, 62, 80, 0.4); }
+
+        /* Sembunyikan Scrollbar agar Tampilan Bersih */
+        .content::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="container">
+        <div class="quadrant q1">
+            <div class="label"><span class="label-icon">🚨</span> URGENT - IMPORTANT</div>
+            <textarea class="content" id="task1" placeholder="Prioritas utama, lakukan sekarang..."></textarea>
+        </div>
+        <div class="quadrant q2">
+            <div class="label"><span class="label-icon">📅</span> PLAN - IMPORTANT</div>
+            <textarea class="content" id="task2" placeholder="Jadwalkan rincian, fokus jangka panjang..."></textarea>
+        </div>
+        <div class="quadrant q3">
+            <div class="label"><span class="label-icon">🤝</span> DELEGATE - URGENT</div>
+            <textarea class="content" id="task3" placeholder="Siapa yang bisa membantu menyelesaikan?"></textarea>
+        </div>
+        <div class="quadrant q4">
+            <div class="label"><span class="label-icon">🗑️</span> ELIMINATE - TRIVIAL</div>
+            <textarea class="content" id="task4" placeholder="Hapus atau kurangi gangguan..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor(x, y, dx, dy, size) {
+                this.x = x;
+                this.y = y;
+                this.dx = dx;
+                this.dy = dy;
+                this.size = size;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(44, 62, 80, 0.3)'; /* Warna node gelap transparan */
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) this.dx = -this.dx;
+                if (this.y > canvas.height || this.y < 0) this.dy = -this.dy;
+                this.x += this.dx;
+                this.y += this.dy;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            // Sesuaikan jumlah partikel dengan ukuran layar agar performa stabil
+            let n = (canvas.width * canvas.height) / 10000;
+            n = Math.min(n, 100); // Batasi maksimal partikel agar tidak memberatkan HP
+            for (let i = 0; i < n; i++) {
+                let size = Math.random() * 2 + 1;
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let dx = (Math.random() - 0.5) * 0.6; // Gerakan lambat
+                let dy = (Math.random() - 0.5) * 0.6;
+                particlesArray.push(new Particle(x, y, dx, dy, size));
+            }
+        }
+
+        function connect() {
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let dist = ((particlesArray[a].x - particlesArray[b].x)**2) + 
+                               ((particlesArray[a].y - particlesArray[b].y)**2);
+                    // Radius koneksi yang pas
+                    if (dist < 15000) {
+                        ctx.strokeStyle = `rgba(44, 62, 80, ${1 - dist/15000})`; /* Opasitas dinamis */
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Bersihkan canvas untuk frame baru
+            particlesArray.forEach(p => p.update());
+            connect();
+            requestAnimationFrame(animate);
+        }
+
+        // Fitur Auto-Save: Menyimpan tulisan secara otomatis
+        document.querySelectorAll('textarea').forEach(t => {
+            t.value = localStorage.getItem(t.id) || ''; // Ambil data saat halaman dimuat
+            t.addEventListener('input', () => localStorage.setItem(t.id, t.value)); // Simpan data saat mengetik
+        });
+
+        // Tangani perubahan ukuran layar
+        window.addEventListener('resize', () => {
+            setCanvasSize();
+            init();
+        });
+
+        // Inisialisasi awal
+        setCanvasSize();
+        init();
+        animate();
+    </script>
+</body>
+</html>
